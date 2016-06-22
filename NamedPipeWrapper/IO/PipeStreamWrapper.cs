@@ -122,7 +122,7 @@ namespace NamedPipeWrapper.IO
         /// </summary>
         public void Close()
         {
-            BaseStream.Close();
+            BaseStream.Dispose();
         }
     }
 }

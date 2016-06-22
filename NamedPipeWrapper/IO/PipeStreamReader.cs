@@ -5,7 +5,7 @@ using System.IO.Pipes;
 using System.Linq;
 using System.Net;
 using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
+using Newtonsoft.Json;
 
 namespace NamedPipeWrapper.IO
 {
@@ -26,7 +26,7 @@ namespace NamedPipeWrapper.IO
         /// </summary>
         public bool IsConnected { get; private set; }
 
-        private readonly BinaryFormatter _binaryFormatter = new BinaryFormatter();
+        private readonly JsonSerializer _jsonSerializer = JsonSerializer.Create();
 
         /// <summary>
         /// Constructs a new <c>PipeStreamReader</c> object that reads data from the given <paramref name="stream"/>.
@@ -67,8 +67,10 @@ namespace NamedPipeWrapper.IO
             var data = new byte[len];
             BaseStream.Read(data, 0, len);
             using (var memoryStream = new MemoryStream(data))
+            using (var reader = new StreamReader(memoryStream))
             {
-                return (T) _binaryFormatter.Deserialize(memoryStream);
+                var res = _jsonSerializer.Deserialize(reader, typeof(T)) as T;
+                return res;
             }
         }
 

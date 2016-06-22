@@ -6,6 +6,8 @@ using System.Linq;
 using System.Net;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace NamedPipeWrapper.IO
 {
@@ -21,7 +23,7 @@ namespace NamedPipeWrapper.IO
         /// </summary>
         public PipeStream BaseStream { get; private set; }
 
-        private readonly BinaryFormatter _binaryFormatter = new BinaryFormatter();
+        private readonly JsonSerializer _jsonSerializer = JsonSerializer.Create();
 
         /// <summary>
         /// Constructs a new <c>PipeStreamWriter</c> object that writes to given <paramref name="stream"/>.
@@ -37,10 +39,9 @@ namespace NamedPipeWrapper.IO
         /// <exception cref="SerializationException">An object in the graph of type parameter <typeparamref name="T"/> is not marked as serializable.</exception>
         private byte[] Serialize(T obj)
         {
-            using (var memoryStream = new MemoryStream())
             {
-                _binaryFormatter.Serialize(memoryStream, obj);
-                return memoryStream.ToArray();
+                var result = JsonConvert.SerializeObject(obj);
+                return Encoding.UTF8.GetBytes(result);
             }
         }
 

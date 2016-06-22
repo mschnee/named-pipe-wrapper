@@ -234,7 +234,7 @@ namespace NamedPipeWrapper
             if (pipe == null) return;
             using (var x = pipe)
             {
-                x.Close();
+                x.Dispose();
             }
         }
 
